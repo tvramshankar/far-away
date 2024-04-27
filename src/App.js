@@ -23,7 +23,7 @@ function App() {
         handleDelete={handleDelete}
         handleToggle={handleToggle}
       ></PackingLists>
-      <Stats></Stats>
+      <Stats items={items}></Stats>
     </div>
   );
 }
@@ -71,10 +71,21 @@ function Form({ handleClick }) {
 }
 
 function PackingLists({ items, handleDelete, handleToggle }) {
+  const [sortBy, setSortBy] = useState("input");
+  let sortedList;
+  if (sortBy === "input") sortedList = items;
+  if (sortBy === "description")
+    sortedList = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  if (sortBy === "packed")
+    sortedList = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
   return (
     <div className="list">
       <ul>
-        {items.map((e) => (
+        {sortedList.map((e) => (
           <List
             list={e}
             handleDelete={handleDelete}
@@ -83,6 +94,13 @@ function PackingLists({ items, handleDelete, handleToggle }) {
           />
         ))}
       </ul>
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by input</option>
+          <option value="description">Sort by description</option>
+          <option value="packed">Sort by packed status</option>
+        </select>
+      </div>
     </div>
   );
 }
@@ -111,10 +129,27 @@ function List({ list, handleDelete, handleToggle }) {
   );
 }
 
-function Stats() {
+function Stats({ items }) {
+  if (!items.length) {
+    return (
+      <footer className="stats">
+        <em>You haven't added any list of items🥹</em>
+      </footer>
+    );
+  }
+  const numberOfItems = items.length;
+  const numberOfPackedItems = items.filter((e) => e.packed).length;
+  const percentageOfPackedItems = Math.round(
+    (numberOfPackedItems / numberOfItems) * 100
+  );
   return (
     <footer className="stats">
-      <em>You have X items on your list, and you already packed X (x%) 😘</em>
+      <em>
+        {percentageOfPackedItems === 100
+          ? "You have packed everything😍"
+          : `You have ${numberOfItems} items on your list, and you already packed
+        ${numberOfPackedItems}(${percentageOfPackedItems}%) 😘`}
+      </em>
     </footer>
   );
 }
