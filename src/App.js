@@ -9,11 +9,20 @@ function App() {
   function handleDelete(id) {
     setItems((items) => items.filter((e) => e.id !== id));
   }
+  function handleToggle(id) {
+    setItems((items) =>
+      items.map((e) => (e.id === id ? { ...e, packed: !e.packed } : e))
+    );
+  }
   return (
     <div className="app">
       <Logo></Logo>
       <Form handleClick={handleClick}></Form>
-      <PackingLists items={items} handleDelete={handleDelete}></PackingLists>
+      <PackingLists
+        items={items}
+        handleDelete={handleDelete}
+        handleToggle={handleToggle}
+      ></PackingLists>
       <Stats></Stats>
     </div>
   );
@@ -61,21 +70,33 @@ function Form({ handleClick }) {
   );
 }
 
-function PackingLists({ items, handleDelete }) {
+function PackingLists({ items, handleDelete, handleToggle }) {
   return (
     <div className="list">
       <ul>
         {items.map((e) => (
-          <List list={e} handleDelete={handleDelete} key={e.id} />
+          <List
+            list={e}
+            handleDelete={handleDelete}
+            handleToggle={handleToggle}
+            key={e.id}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function List({ list, handleDelete }) {
+function List({ list, handleDelete, handleToggle }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        value={list.packed}
+        onChange={() => {
+          handleToggle(list.id);
+        }}
+      ></input>
       <span style={list.packed ? { textDecoration: "line-through" } : {}}>
         {list.quantity} {list.description}
       </span>
