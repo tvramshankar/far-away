@@ -14,6 +14,10 @@ function App() {
       items.map((e) => (e.id === id ? { ...e, packed: !e.packed } : e))
     );
   }
+  function handleClear() {
+    const confirmed = window.confirm("Are you sure want to delete all items?");
+    if (confirmed) setItems([]);
+  }
   return (
     <div className="app">
       <Logo></Logo>
@@ -22,6 +26,7 @@ function App() {
         items={items}
         handleDelete={handleDelete}
         handleToggle={handleToggle}
+        handleClear={handleClear}
       ></PackingLists>
       <Stats items={items}></Stats>
     </div>
@@ -70,7 +75,7 @@ function Form({ handleClick }) {
   );
 }
 
-function PackingLists({ items, handleDelete, handleToggle }) {
+function PackingLists({ items, handleDelete, handleToggle, handleClear }) {
   const [sortBy, setSortBy] = useState("input");
   let sortedList;
   if (sortBy === "input") sortedList = items;
@@ -100,6 +105,7 @@ function PackingLists({ items, handleDelete, handleToggle }) {
           <option value="description">Sort by description</option>
           <option value="packed">Sort by packed status</option>
         </select>
+        <button onClick={handleClear}>Clear List</button>
       </div>
     </div>
   );
